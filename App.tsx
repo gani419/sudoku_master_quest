@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, Platform } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { GameScreen } from './src/screens/GameScreen';
 import { ProfileModal } from './src/components/Modals/ProfileModal';
@@ -65,57 +66,61 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={[styles.root, { backgroundColor: colors.background }]}>
+    <SafeAreaProvider>
       <StatusBar
         barStyle={themeMode === 'dark' ? 'light-content' : 'dark-content'}
       />
+      <SafeAreaView
+        style={[styles.root, { backgroundColor: colors.background }]}
+        edges={['top', 'bottom', 'left', 'right']}
+      >
+        {currentScreen === 'home' ? (
+          <HomeScreen
+            onStartGame={handleStartGame}
+            onOpenProfile={() => setProfileModalVisible(true)}
+            onOpenBonusStagePrompt={(tier) => setBonusModalTier(tier)}
+            onOpenTutorial={() => setOnboardingVisible(true)}
+          />
+        ) : (
+          <GameScreen
+            onBack={() => setCurrentScreen('home')}
+            onOpenProfile={() => setProfileModalVisible(true)}
+            onNextStage={handleNextStage}
+          />
+        )}
 
-      {currentScreen === 'home' ? (
-        <HomeScreen
-          onStartGame={handleStartGame}
-          onOpenProfile={() => setProfileModalVisible(true)}
-          onOpenBonusStagePrompt={(tier) => setBonusModalTier(tier)}
-          onOpenTutorial={() => setOnboardingVisible(true)}
+        {/* Gamer Profile & Analytics Hub */}
+        <ProfileModal
+          visible={profileModalVisible}
+          onClose={() => setProfileModalVisible(false)}
         />
-      ) : (
-        <GameScreen
-          onBack={() => setCurrentScreen('home')}
-          onOpenProfile={() => setProfileModalVisible(true)}
-          onNextStage={handleNextStage}
+
+        {/* Bonus Stage Unlock Prompt */}
+        {bonusModalTier && (
+          <BonusStageModal
+            visible={!!bonusModalTier}
+            tier={bonusModalTier}
+            onClose={() => setBonusModalTier(null)}
+            onUnlockedAndPlay={() => {
+              const tier = bonusModalTier;
+              setBonusModalTier(null);
+              const bonusPuzzle = (allPuzzles as PuzzleData[]).find(
+                (p) => p.difficulty === tier && p.isBonusStage,
+              );
+              if (bonusPuzzle) {
+                handleStartGame(bonusPuzzle, true);
+              }
+            }}
+          />
+        )}
+
+        {/* Pilot Briefing / First-time Tutorial */}
+        <OnboardingModal
+          visible={onboardingVisible}
+          onStartPilotGame={handleStartPilotGame}
         />
-      )}
-
-      {/* Gamer Profile & Analytics Hub */}
-      <ProfileModal
-        visible={profileModalVisible}
-        onClose={() => setProfileModalVisible(false)}
-      />
-
-      {/* Bonus Stage Unlock Prompt */}
-      {bonusModalTier && (
-        <BonusStageModal
-          visible={!!bonusModalTier}
-          tier={bonusModalTier}
-          onClose={() => setBonusModalTier(null)}
-          onUnlockedAndPlay={() => {
-            const tier = bonusModalTier;
-            setBonusModalTier(null);
-            const bonusPuzzle = (allPuzzles as PuzzleData[]).find(
-              (p) => p.difficulty === tier && p.isBonusStage,
-            );
-            if (bonusPuzzle) {
-              handleStartGame(bonusPuzzle, true);
-            }
-          }}
-        />
-      )}
-
-      {/* Pilot Briefing / First-time Tutorial */}
-      <OnboardingModal
-        visible={onboardingVisible}
-        onStartPilotGame={handleStartPilotGame}
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

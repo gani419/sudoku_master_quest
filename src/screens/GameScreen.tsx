@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
   useWindowDimensions,
   View,
@@ -39,7 +38,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
     : Math.min(width - 24, height * 0.52);
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <View style={[styles.safeArea, { backgroundColor: colors.background }]}>
       {/* Header with Timer and Profile */}
       <AppHeader onBack={onBack} onOpenProfile={onOpenProfile} isGameScreen />
 
@@ -75,7 +74,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
         onNextStage={onNextStage}
         onExitToMenu={onBack}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
