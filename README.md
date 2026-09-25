@@ -1,97 +1,105 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 🐐 Sudoku GOAT: Master Quest
 
-# Getting Started
+> An ambitious, modern offline Sudoku puzzle game built with **React Native CLI**, powered by **Zustand** state management, **MMKV** offline caching, and Google AdMob monetization.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+Package Name: `com.tecdroid.sudoku`
 
-## Step 1: Start Metro
+---
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+## 🌟 Key Features
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+* **Gamer Badge Progression (From Rookie to GOAT)**:
+  * 🌱 **Level 0**: Rookie (Starting rank)
+  * ✨ **Level 1**: Noob (Unlocks *"Casual Brain"* Badge)
+  * 🎯 **Level 2**: Grinder (Unlocks *"Locked In"* Badge)
+  * 🌌 **Level 3**: Nerd (Unlocks *"Galaxy Brain"* Badge)
+  * 😈 **Level 4**: Pro (Unlocks *"Sudoku Demon"* Badge)
+  * 🐐 **Level 5**: The GOAT (Unlocks *"The GOAT"* Legendary Badge)
+* **1,000 Verified Offline Puzzles**:
+  * 200 curated, uniquely solvable puzzles per tier stored in lightweight JSON (~270 KB).
+  * 100% offline-first architecture with instant loading.
+* **Dual Game Mode**:
+  * 🏆 **Campaign Roadmap**: 50 stages with 1-3 star ratings and tier locks.
+  * ⚡ **Free Play**: Unconstrained difficulty selection across all 5 tiers.
+* **Secret Bonus Boss Stage**:
+  * Beating Stage 10 in any tier unlocks an exclusive Bonus Boss Stage, accessible by watching a short rewarded video ad.
+* **Smart Rewarded Ads**:
+  * ⏰ **Overtime Extension**: Scaled extra time (+3 to +8 mins) on timeout via Rewarded Video.
+  * 💡 **Smart Hint**: Voluntary Rewarded Video to reveal strategic placements.
+  * 🛡️ **Offline Resilience**: Automatic "Emergency Free Pass" if offline or if no ad is filled.
+* **Dual Theming**:
+  * 🌙 **Obsidian Dark Mode** (Default high-contrast gamer vibe)
+  * ☀️ **Pure Paper Light Mode** (Clean daytime reading)
+  * One-tap instant theme toggle in the header.
+* **Gamer Profile & Local Analytics Hub**:
+  * Custom Display Name & Gamer Tag (`@handle`).
+  * 8 selectable gamer avatars (*Cyber Ninja, Pixel Knight, Galaxy Brain, Chill Capybara, Neon Bot, Mystic Wizard, Speed Demon, The GOAT*).
+  * Offline stats: Games played, Win rate %, Personal Best (PB) speed, Average solving time per tier, and Clean Runs.
+* **Positive Reinforcement "Hype Engine"**:
+  * Encouraging toasts (*"Cooking! 🔥"*, *"Big Brain! 🧠"*, *"Locked In! 🎯"*).
+  * Empathetic cushion on timeouts (*"Almost had it! Grab extra time & seal the win"*).
 
-```sh
-# Using npm
+---
+
+## 🏗️ Architecture & Code Standards
+
+* **State Management**: Zustand stores (`useGameStore`, `useCampaignStore`, `useProfileStore`, `useThemeStore`).
+* **Zero UI Logic**: UI components (`SudokuGrid`, `SudokuCell`, `Numpad`, `ActionToolbar`) are purely declarative dumb views consuming actions and selectors.
+* **Performance**: Memoized 81-cell grid (`SudokuCell` with custom `areEqual` comparison) ensuring 60/120 FPS on all Android devices.
+* **Secrets Security**: All AdMob App and Unit IDs are stored in `.env` and typed via `@env` module.
+
+---
+
+## 🔑 Environment Variables & AdMob Setup
+
+Create a `.env` file in the root directory (based on `.env.example`):
+
+```bash
+# AdMob Application and Ad Unit IDs
+# Test IDs below can be used for safe development
+ADMOB_ANDROID_APP_ID=ca-app-pub-3940256099942544~3347511713
+ADMOB_BANNER_ID=ca-app-pub-3940256099942544/6300978111
+ADMOB_REWARDED_TIMER_ID=ca-app-pub-3940256099942544/5224354917
+ADMOB_REWARDED_BONUS_ID=ca-app-pub-3940256099942544/5224354917
+ADMOB_INTERSTITIAL_ID=ca-app-pub-3940256099942544/1033173712
+APP_ENV=production
+```
+
+When publishing to Google Play Store, replace these with your production Ad Unit IDs from [admob.google.com](https://admob.google.com).
+
+---
+
+## 🚀 Running the App
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Start Metro Bundler
+```bash
 npm start
-
-# OR using Yarn
-yarn start
 ```
 
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
+### 3. Run on Android Device / Emulator
+```bash
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+---
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## 📦 Building for Google Play Store (Release AAB)
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+1. Generate your production upload keystore (or use Play App Signing).
+2. Build the Android App Bundle (`.aab`):
+```bash
+cd android
+./gradlew bundleRelease
 ```
+The optimized bundle will be generated at:
+`android/app/build/outputs/bundle/release/app-release.aab`
 
-Then, and every time you update your native dependencies, run:
+---
 
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 📄 License
+Private & Proprietary - TecDroid. All rights reserved.
