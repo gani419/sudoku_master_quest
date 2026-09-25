@@ -1,8 +1,27 @@
-# 🐐 Sudoku GOAT: Master Quest
+<div align="center">
+  <img src="docs/screenshots/app_icon.png" width="130" height="130" alt="Sudoku GOAT App Icon" style="border-radius: 28px;" />
+  <h1>🐐 Sudoku GOAT: Master Quest</h1>
+  <p><b>From Rookie to GOAT • 1,000 Verified Offline Puzzles • Modern Gamer Hub</b></p>
+  <p>Package ID: <code>com.tecdroid.sudoku</code></p>
+</div>
 
-> An ambitious, modern offline Sudoku puzzle game built with **React Native CLI**, powered by **Zustand** state management, **MMKV** offline caching, and Google AdMob monetization.
+---
 
-Package Name: `com.tecdroid.sudoku`
+## 📸 App Showcase
+
+<p align="center">
+  <img src="docs/screenshots/store_showcase.png" width="100%" alt="Sudoku GOAT Play Store Showcase Banner" />
+</p>
+
+### 📱 In-Game Screens
+
+<p align="center">
+  <img src="docs/screenshots/gameplay.png" width="31%" alt="Gameplay Screen" />
+  &nbsp;
+  <img src="docs/screenshots/campaign.png" width="31%" alt="Campaign Roadmap Screen" />
+  &nbsp;
+  <img src="docs/screenshots/profile.png" width="31%" alt="Gamer Profile Hub" />
+</p>
 
 ---
 
