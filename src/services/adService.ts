@@ -5,6 +5,7 @@ import mobileAds, {
   AdEventType,
   MaxAdContentRating,
   TestIds,
+  AdsConsent,
 } from 'react-native-google-mobile-ads';
 import {
   ADMOB_BANNER_ID,
@@ -12,20 +13,6 @@ import {
   ADMOB_REWARDED_BONUS_ID,
   ADMOB_INTERSTITIAL_ID,
 } from '@env';
-
-// Enforce Child/Family-safe & PG rating across all ad requests
-mobileAds()
-  .setRequestConfiguration({
-    maxAdContentRating: MaxAdContentRating.PG,
-    tagForChildDirectedTreatment: false,
-    tagForUnderAgeOfConsent: false,
-  })
-  .then(() => {
-    return mobileAds().initialize();
-  })
-  .catch((err) => {
-    console.log('[AdMob] Init note:', err);
-  });
 
 // Fallback to official Google Test IDs if .env values are missing/placeholder
 const BANNER_AD_UNIT = ADMOB_BANNER_ID || TestIds.BANNER;
@@ -37,19 +24,47 @@ export class AdService {
   private static gamesCompletedSinceLastInterstitial = 0;
   private static timerRewardedAd: RewardedAd | null = null;
   private static bonusRewardedAd: RewardedAd | null = null;
-  private static hintRewardedAd: RewardedAd | null = null;
   private static interstitialAd: InterstitialAd | null = null;
 
   public static getBannerAdUnitId(): string {
     return BANNER_AD_UNIT;
   }
 
-  // Preload Rewarded Ads for instantaneous playback
-  public static initAds() {
+  // Preload Rewarded Ads for instantaneous playback with UMP Consent
+  public static async initAds() {
+    try {
+      await mobileAds().setRequestConfiguration({
+        maxAdContentRating: MaxAdContentRating.PG,
+        tagForChildDirectedTreatment: false,
+        tagForUnderAgeOfConsent: false,
+      });
+
+      // Request UMP consent for European regulations (GDPR) if required
+      try {
+        await AdsConsent.gatherConsent();
+      } catch (consentErr) {
+        console.log('[AdMob] UMP Consent note:', consentErr);
+      }
+
+      await mobileAds().initialize();
+    } catch (err) {
+      console.log('[AdMob] Init note:', err);
+    }
+
     this.loadTimerRewardedAd();
     this.loadBonusRewardedAd();
-    this.loadHintRewardedAd();
     this.loadInterstitialAd();
+  }
+
+  /**
+   * Opens the Google UMP consent form if the user wants to review or change consent choices (EU/UK).
+   */
+  public static async showPrivacyOptions(): Promise<void> {
+    try {
+      await AdsConsent.showPrivacyOptionsForm();
+    } catch (err) {
+      console.log('[AdMob] Show privacy options note:', err);
+    }
   }
 
   private static loadTimerRewardedAd() {
@@ -74,17 +89,6 @@ export class AdService {
     }
   }
 
-  private static loadHintRewardedAd() {
-    try {
-      this.hintRewardedAd = RewardedAd.createForAdRequest(REWARDED_TIMER_UNIT, {
-        requestNonPersonalizedAdsOnly: false,
-      });
-      this.hintRewardedAd.load();
-    } catch (e) {
-      console.log('[AdMob] Error loading hint ad:', e);
-    }
-  }
-
   private static loadInterstitialAd() {
     try {
       this.interstitialAd = InterstitialAd.createForAdRequest(INTERSTITIAL_UNIT, {
@@ -94,45 +98,6 @@ export class AdService {
     } catch (e) {
       console.log('[AdMob] Error loading interstitial:', e);
     }
-  }
-
-  /**
-   * Shows a rewarded ad to unlock a Smart Hint.
-   */
-  public static showRewardedAdForHint(
-    onRewardEarned: () => void,
-    onFallbackPass: () => void,
-  ): Promise<boolean> {
-    return new Promise((resolve) => {
-      if (!this.hintRewardedAd || !this.hintRewardedAd.loaded) {
-        onFallbackPass();
-        this.loadHintRewardedAd();
-        resolve(false);
-        return;
-      }
-
-      let rewardGranted = false;
-
-      const unsubscribeEarned = this.hintRewardedAd.addAdEventListener(
-        RewardedAdEventType.EARNED_REWARD,
-        () => {
-          rewardGranted = true;
-          onRewardEarned();
-        },
-      );
-
-      const unsubscribeClosed = this.hintRewardedAd.addAdEventListener(
-        AdEventType.CLOSED,
-        () => {
-          unsubscribeEarned();
-          unsubscribeClosed();
-          this.loadHintRewardedAd();
-          resolve(rewardGranted);
-        },
-      );
-
-      this.hintRewardedAd.show();
-    });
   }
 
   /**

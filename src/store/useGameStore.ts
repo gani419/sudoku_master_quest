@@ -388,7 +388,7 @@ export const useGameStore = create<GameState>((set, get) => {
       });
     },
 
-    useSmartHint: async () => {
+    useSmartHint: () => {
       const { board, selectedCellIndex, status } = get();
       if (status !== 'playing') return;
 
@@ -400,35 +400,28 @@ export const useGameStore = create<GameState>((set, get) => {
 
       if (targetIdx === -1) return;
 
-      const applyHint = () => {
-        const currentBoard = get().board;
-        hapticService.sectionClear();
-        const newBoard = currentBoard.map((c) => ({ ...c, notes: [...c.notes] }));
-        const target = newBoard[targetIdx!];
-        target.value = target.solutionValue;
-        target.isError = false;
-        target.notes = [];
+      const currentBoard = get().board;
+      hapticService.sectionClear();
+      const newBoard = currentBoard.map((c) => ({ ...c, notes: [...c.notes] }));
+      const target = newBoard[targetIdx];
+      target.value = target.solutionValue;
+      target.isError = false;
+      target.notes = [];
 
-        const remainingCounts = getRemainingNumbersCount(newBoard);
-        const isSolved = isBoardSolved(newBoard);
+      const remainingCounts = getRemainingNumbersCount(newBoard);
+      const isSolved = isBoardSolved(newBoard);
 
-        set({
-          board: newBoard,
-          remainingCounts,
-          selectedCellIndex: targetIdx,
-          status: isSolved ? 'victory' : 'playing',
-          praiseToast: {
-            text: 'Smart Hint Unlocked!',
-            emoji: '💡',
-            subtext: `Placed ${target.solutionValue} in Row ${target.row + 1}, Col ${target.col + 1}`,
-          },
-        });
-      };
-
-      await AdService.showRewardedAdForHint(
-        () => applyHint(),
-        () => applyHint(), // offline fallback pass
-      );
+      set({
+        board: newBoard,
+        remainingCounts,
+        selectedCellIndex: targetIdx,
+        status: isSolved ? 'victory' : 'playing',
+        praiseToast: {
+          text: 'Smart Hint!',
+          emoji: '💡',
+          subtext: `Placed ${target.solutionValue} in Row ${target.row + 1}, Col ${target.col + 1}`,
+        },
+      });
     },
 
     pauseGame: () => {

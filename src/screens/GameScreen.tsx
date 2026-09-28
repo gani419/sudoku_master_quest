@@ -21,6 +21,24 @@ interface GameScreenProps {
   onNextStage: () => void;
 }
 
+// give me the report in how many scenarios im showing ad?
+// eg: when hint show an ad
+// 1. Release Signing Key
+// 2. AdMob Production Config
+// 3. GDPR / UMP Consent
+// 4. Privacy Policy	
+// 5. Store Listing Graphics
+// Release Signing Key	❌ FAIL	App is currently signed with debug.keystore in release build type.
+// AdMob Production Config	❌ FAIL	Contains Google's sample test IDs in 
+// app.json
+//  and 
+// .env
+// .
+// GDPR / UMP Consent	❌ FAIL	Missing Google User Messaging Platform (UMP) consent initialization required for EEA/UK users.
+// Privacy Policy	❌ FAIL	No Privacy Policy link exists in the app or documented for the Play Console URL field.
+// Store Listing Graphics	⚠️ PARTIAL	Graphic assets exist, but need resizing to meet exact Play Console dimensions (512×512 icon, 1024×500 feature graphic).
+
+
 export const GameScreen: React.FC<GameScreenProps> = ({
   onBack,
   onOpenProfile,
